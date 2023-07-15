@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@my-project/layout": ["libs/layout/src/index.ts"],
+      "@my-project/login-form": ["libs/login-form/src/index.ts"],
       "@my-project/menu-items": ["libs/menu-items/src/index.ts"],
       "@my-project/ui-component": ["libs/ui-component/src/index.ts"],
       "@my-project/views": ["libs/views/src/index.ts"]
