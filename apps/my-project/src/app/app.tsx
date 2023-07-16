@@ -1,8 +1,10 @@
 import styled from '@emotion/styled';
 import NxWelcome from './nx-welcome';
 
-import { SignIn } from '@my-project/login-form';
+import { MainLoginForm, SignIn } from '@my-project/login-form';
 import { CssBaseline } from '@mui/material';
+
+import { UserManagement } from '@my-project/routes';
 
 const Main = styled('div')({
   width: '100%',
@@ -14,7 +16,7 @@ export function App() {
   return (
     <Main>
       <CssBaseline />
-      <SignIn />
+      <UserManagement />
     </Main>
   );
 }

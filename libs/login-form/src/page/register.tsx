@@ -37,7 +37,7 @@ const CardLogin = styled('div')({
   },
 });
 
-export const SignIn = () => {
+export const Register = () => {
   const [isShow, setIsShow] = useState(false);
   const [type, setType] = useState('password');
 
@@ -52,15 +52,19 @@ export const SignIn = () => {
 
   const formik = useFormik({
     initialValues: {
+      name: '',
       email: '',
       password: '',
+      confirm_password: '',
     },
     validationSchema: yup.object({
+      name: yup.string().required('Name is required'),
       email: yup.string().email().required('Email is required'),
       password: yup
         .string()
         .min(6, 'Password should be of minimum 6 characters length')
         .required('Password is required'),
+      confirm_password: yup.string().required('Confirm password is required'),
     }),
     onSubmit: (values) => {
       console.log('Values Sigin', values);
@@ -72,9 +76,22 @@ export const SignIn = () => {
       <Typography
         sx={{ textAlign: 'center', fontSize: '30px', fontWeight: 'bold' }}
       >
-        Log In
+        Register
       </Typography>
       <form onSubmit={formik.handleSubmit}>
+        <TextField
+          fullWidth
+          id="name"
+          name="name"
+          label="Name"
+          size="small"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.name}
+          error={formik.touched.name && Boolean(formik.errors.name)}
+          helperText={formik.touched.name && formik.errors.name}
+          sx={{ width: 'calc(100% - 32px)', margin: '16px' }}
+        />
         <TextField
           fullWidth
           id="email"
@@ -109,12 +126,38 @@ export const SignIn = () => {
             ),
           }}
         />
+        <TextField
+          fullWidth
+          id="confirm_password"
+          name="confirm_password"
+          label="Confirm Password"
+          size="small"
+          type={type}
+          sx={{ width: 'calc(100% - 32px)', margin: '16px' }}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.confirm_password}
+          error={
+            formik.touched.confirm_password &&
+            Boolean(formik.errors.confirm_password)
+          }
+          helperText={
+            formik.touched.confirm_password && formik.errors.confirm_password
+          }
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleIsShowPassword()}>
+                {isShow ? <IconEyeOff /> : <IconEye />}
+              </IconButton>
+            ),
+          }}
+        />
 
         <Divider sx={{ margin: '5px 16px' }} />
         <Typography sx={{ padding: '5px 16px' }}>
-          Don't have account,{' '}
-          <Link href="/register" sx={{ cursor: 'pointer' }}>
-            create one
+          Have account,{' '}
+          <Link href="/login" sx={{ cursor: 'pointer' }}>
+            sign in
           </Link>{' '}
         </Typography>
         <Button
@@ -150,7 +193,7 @@ export const SignIn = () => {
             },
           }}
         >
-          <Typography>Login</Typography>
+          <Typography>Register</Typography>
         </Button>
       </form>
     </CardLogin>
