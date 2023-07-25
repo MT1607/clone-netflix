@@ -9,8 +9,12 @@ import {
 } from '@mui/material';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useFormik } from 'formik';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as yup from 'yup';
+import { useCreateUserMutation } from '@my-project/redux';
+import bcrypt from 'bcryptjs';
+
+import MySwal from 'sweetalert2';
 
 const CardLogin = styled('div')({
   position: 'absolute',
@@ -41,6 +45,11 @@ export const Register = () => {
   const [isShow, setIsShow] = useState(false);
   const [type, setType] = useState('password');
 
+  const [
+    createUser,
+    { data: createUserResponse, isLoading: creating, error: createUserError },
+  ] = useCreateUserMutation();
+
   const handleIsShowPassword = () => {
     setIsShow(!isShow);
     if (!isShow) {
@@ -50,24 +59,46 @@ export const Register = () => {
     }
   };
 
+  useEffect(() => {
+    if (createUserResponse !== undefined) {
+      if (createUserResponse.status === 201) {
+        MySwal.fire({
+          title: 'Success!',
+          text: 'Your account was successfully registed.',
+          icon: 'success',
+        });
+      }
+    }
+  }, [createUserResponse]);
+
   const formik = useFormik({
     initialValues: {
-      name: '',
+      username: '',
       email: '',
       password: '',
       confirm_password: '',
     },
     validationSchema: yup.object({
-      name: yup.string().required('Name is required'),
+      username: yup.string().required('Name is required'),
       email: yup.string().email().required('Email is required'),
       password: yup
         .string()
         .min(6, 'Password should be of minimum 6 characters length')
         .required('Password is required'),
-      confirm_password: yup.string().required('Confirm password is required'),
+      confirm_password: yup
+        .string()
+        .required('Confirm password is required')
+        .oneOf(
+          [yup.ref('password')],
+          'Confirm password not match with your password'
+        ),
     }),
-    onSubmit: (values) => {
-      console.log('Values Sigin', values);
+    onSubmit: async (values) => {
+      const { confirm_password, ...bodyCreateUser } = values;
+      await createUser({
+        ...bodyCreateUser,
+        password: bcrypt.hashSync(values.password, 5),
+      });
     },
   });
 
@@ -81,15 +112,15 @@ export const Register = () => {
       <form onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth
-          id="name"
-          name="name"
+          id="username"
+          name="username"
           label="Name"
           size="small"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          value={formik.values.name}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
+          value={formik.values.username}
+          error={formik.touched.username && Boolean(formik.errors.username)}
+          helperText={formik.touched.username && formik.errors.username}
           sx={{ width: 'calc(100% - 32px)', margin: '16px' }}
         />
         <TextField
